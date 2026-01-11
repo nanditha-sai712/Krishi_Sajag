@@ -1,1 +1,93 @@
+import sqlite3
+
+DATABASE_NAME = 'knowledge.db'
+
+def seed_db():
+    # Connect to (or create) the database file
+    conn = sqlite3.connect(DATABASE_NAME)
+    cursor = conn.cursor()
+
+    # 1. Create the table
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS diseases (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            disease_key TEXT,
+            lang_code TEXT,
+            disease_name TEXT,
+            cause TEXT,
+            symptoms TEXT,
+            remedies TEXT,
+            preventive TEXT,
+            UNIQUE(disease_key, lang_code)
+        )
+    ''')
+
+    # 2. Prepare the Data (English, Hindi, Telugu)
+    data = [
+        # --- RICE BLAST ---
+        ("Rice Blast", "en", "Rice Blast", "Fungus (Magnaporthe oryzae)", 
+         "Spindle-shaped spots with white centers on leaves.", 
+         "Apply Neem oil or Tricyclazole fungicide.", 
+         "Use resistant varieties and avoid excessive Nitrogen."),
+        
+        ("Rice Blast", "hi", "धान का झोंका (Rice Blast)", "कवक (Magnaporthe oryzae)", 
+         "पत्तियों पर सफेद केंद्र वाले धुरी के आकार के धब्बे।", 
+         "नीम का तेल या ट्राइसाइक्लाज़ोल कवकनाशी लगाएं।", 
+         "प्रतिरोधी किस्मों का उपयोग करें और अत्यधिक नाइट्रोजन से बचें।"),
+
+        ("Rice Blast", "te", "వరి అగ్గి తెగులు (Rice Blast)", "శిలీంధ్రం (Magnaporthe oryzae)", 
+         "ఆకులపై తెల్లటి కేంద్రంతో కదురు ఆకారపు మచ్చలు.", 
+         "వేప నూనె లేదా ట్రైసైక్లాజోల్ అనే శిలీంధ్ర నాశిని వాడండి.", 
+         "నిరోధక రకాలను వాడండి మరియు నత్రజని వాడకాన్ని తగ్గించండి."),
+
+        # --- WHEAT RUST ---
+        ("Wheat Rust", "en", "Wheat Rust", "Fungus (Puccinia)", 
+         "Orange or reddish-brown pustules on leaves and stems.", 
+         "Use sulfur dust or Propiconazole fungicide.", 
+         "Plant rust-resistant seeds and rotate crops."),
+
+        ("Wheat Rust", "hi", "गेहूं का गेरुआ (Wheat Rust)", "कवक (Puccinia)", 
+         "पत्तियों और तनों पर नारंगी या लाल-भूरे रंग के छाले।", 
+         "सल्फर डस्ट या प्रोपिकोनाज़ोल कवकनाशी का प्रयोग करें।", 
+         "गेरुआ प्रतिरोधी बीज बोएं और फसल चक्र अपनाएं।"),
+
+        ("Wheat Rust", "te", "గోధుమ తుప్పు తెగులు (Wheat Rust)", "శిలీంధ్రం (Puccinia)", 
+         "ఆకులు మరియు కాండం మీద నారింజ లేదా ఎరుపు-గోధుమ రంగు మచ్చలు.", 
+         "గంధకపు పొడి లేదా ప్రొపికోనాజోల్ వాడండి.", 
+         "తుప్పును తట్టుకునే విత్తనాలను నాటండి మరియు పంట మార్పిడి చేయండి."),
+
+        # --- ZINC DEFICIENCY ---
+        ("Zinc Deficiency", "en", "Zinc Deficiency", "Low soil Zinc levels", 
+         "Bronzing of older leaves and stunted plant growth.", 
+         "Apply Zinc Sulfate (25kg/hectare) to the soil.", 
+         "Test soil regularly and use chelated zinc sprays."),
+
+        ("Zinc Deficiency", "hi", "जिंक की कमी (Zinc Deficiency)", "मिट्टी में जिंक का निम्न स्तर", 
+         "पुरानी पत्तियों का कांस्य रंग होना और पौधों का विकास रुकना।", 
+         "मिट्टी में जिंक सल्फेट (25 किग्रा/हेक्टेयर) डालें।", 
+         "नियमित रूप से मिट्टी की जांच करें और जिंक स्प्रे का उपयोग करें।"),
+
+        ("Zinc Deficiency", "te", "జింక్ లోపం (Zinc Deficiency)", "నేలలో జింక్ పరిమాణం తగ్గడం", 
+         "పాత ఆకులు ఇత్తడి రంగులోకి మారడం మరియు మొక్క ఎదుగుదల ఆగడం.", 
+         "నేలలో జింక్ సల్ఫేట్ (హెక్టారుకు 25 కిలోలు) చల్లండి.", 
+         "మట్టిని క్రమం తప్పకుండా పరీక్షించండి మరియు జింక్ స్ప్రేలను వాడండి.")
+    ]
+
+    # 3. Insert Data
+    print(f"Inserting data into {DATABASE_NAME}...")
+    try:
+        cursor.executemany('''
+            INSERT OR REPLACE INTO diseases 
+            (disease_key, lang_code, disease_name, cause, symptoms, remedies, preventive)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        ''', data)
+        conn.commit()
+        print("✅ Success! Database 'knowledge.db' has been created and seeded.")
+    except sqlite3.Error as e:
+        print(f"❌ Error seeding database: {e}")
+    finally:
+        conn.close()
+
+if __name__ == "__main__":
+    seed_db()
 
